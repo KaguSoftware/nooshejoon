@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand tokens — eyedropped from the نوش‌جان exports, tweakable. */
+  --olive: #6e6e1c;
+  --olive-deep: #5c5c16;
+  --ink: #1a1a1a;
+  --paper-top: #f3f1ea;
+  --paper-bottom: #e9e6dd;
+  --card: #fcfcfa;
+  --frame: #dad7cc;
+  --muted: #8a8778;
+}
+
+@theme inline {
+  --color-olive: var(--olive);
+  --color-olive-deep: var(--olive-deep);
+  --color-ink: var(--ink);
+  --color-paper-top: var(--paper-top);
+  --color-paper-bottom: var(--paper-bottom);
+  --color-card: var(--card);
+  --color-frame: var(--frame);
+  --color-muted: var(--muted);
+  --font-fa: var(--font-vazirmatn);
+  --font-latin: var(--font-inter);
+}
+
+html {
+  background: linear-gradient(
+    180deg,
+    var(--paper-top) 0%,
+    var(--paper-bottom) 100%
+  );
+  background-attachment: fixed;
+  min-height: 100%;
+}
+
+body {
+  color: var(--ink);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Font follows locale via a class set on <html>. */
+html[lang="fa"] body {
+  font-family: var(--font-fa), system-ui, sans-serif;
+}
+html:not([lang="fa"]) body {
+  font-family: var(--font-latin), system-ui, sans-serif;
+}
+
+/* Smooth-scroll for the sticky category chip nav. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media print {
+  html {
+    background: #fff;
+  }
+}
