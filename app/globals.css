@@ -55,8 +55,91 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Hide scrollbar on the horizontal category chip strip. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Custom scrollbars everywhere (no native chrome) ─────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--olive) 45%, transparent) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--olive) 40%, transparent);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--olive) 65%, transparent);
+  background-clip: content-box;
+}
+
+/* ── Custom form controls (used across admin) ───────────────────────────── */
+.field {
+  width: 100%;
+  border-radius: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--frame);
+  padding: 0.55rem 0.8rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field::placeholder {
+  color: color-mix(in srgb, var(--muted) 85%, transparent);
+}
+.field:focus {
+  border-color: var(--olive);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--olive) 18%, transparent);
+}
+
+/* Native select → custom chevron, no OS widget. */
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236E6E1C' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: left 0.7rem center;
+  padding-inline-start: 2rem;
+}
+html[dir="rtl"] .select {
+  background-position: left 0.7rem center;
+}
+html[dir="ltr"] .select {
+  background-position: right 0.7rem center;
+  padding-inline-start: 0.8rem;
+  padding-inline-end: 2rem;
+}
+
+/* Custom file input: hide native button, style the label. */
+.file-input::-webkit-file-upload-button,
+.file-input::file-selector-button {
+  display: none;
+}
+
 @media print {
   html {
     background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area {
+    box-shadow: none !important;
+    outline: none !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
   }
 }

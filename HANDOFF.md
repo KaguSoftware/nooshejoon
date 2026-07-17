@@ -52,9 +52,14 @@ Telegram/phone `05012991414`.
   ink `#1A1A1A`, paper `#F3F1EA`→`#E9E6DD`, card `#FCFCFA`, frame `#DAD7CC`, muted `#8A8778`.
 
 ## Current status
-- **Nothing built yet.** Repo is empty (`first commit` + placeholder README only).
-- Requirements gathered & a full plan drafted (see plan file). Owner **rejected the ExitPlanMode**
-  and asked to run `/handoff` first — so plan is **not yet approved**; re-confirm before building.
+- **Built and building clean** (`npm run build` passes; verified via Playwright screenshots at 390px).
+- Public menu renders faithfully to the exports (framed paper card, logo straddling top, centered
+  title pills, category chip nav, ₺ prices, Persian digits, TR/FA/EN switch). Owner has applied the
+  SQL — live data confirmed in screenshot (all 7 categories/items/prices).
+- Admin: login, guarded dashboard (categories), category page (items), item editor (name/ingredients
+  ×3 langs + subtitle + image upload + price variants), QR page — all wired with server actions.
+- **Not yet deployed.** No custom domain yet; QR is dynamic (encodes current origin at runtime).
+- Playwright is a devDependency (added for screenshot verification) — harmless; can be removed later.
 - Decisions locked with owner:
   - **i18n**: TR default, plus FA + EN; `/tr /fa /en` path prefixes + header switcher; per-locale
     dir & digits. Market = **Persian restaurant in Turkey** (Turkish UI, rich Persian content, EN
@@ -68,49 +73,58 @@ Telegram/phone `05012991414`.
   - Fonts: **Vazirmatn** (FA) + **Inter** (TR/EN).
   - QR: build **dynamic** (encodes current origin at runtime); owner deploys first, then gives URL.
 
-## File map (planned — none exist yet)
-- `app/[locale]/page.tsx` + `app/[locale]/layout.tsx` — public menu; layout sets lang/dir/font/dict
-- `app/page.tsx` — redirect `/` → `/tr`
-- `app/admin/*` — login, dashboard, category/item edit (3-language fields), `qr` page
-- `messages/{tr,fa,en}.json` — UI-chrome dictionaries
-- `utils/supabase/{server,client,middleware}.ts` + root `middleware.ts` — Supabase SSR + locale redirect
-- `lib/i18n.ts` — LOCALES, DEFAULT_LOCALE, dir(), pick(field,locale) fallback, t(dict,key)
-- `lib/{data,actions,fmt}.ts` — queries, server-action mutations, digit/₺-price formatter
-- `supabase/migrations/0001_init.sql` — jsonb tables + RLS + 3-language seed from the 7 exports
-- `public/logo.png` — نوش‌جان logo (owner to drop in)
+## File map (key files — all exist)
+- `app/[locale]/page.tsx` + `layout.tsx` — public menu; layout sets lang/dir/font per locale
+- `app/page.tsx` — redirect `/` → `/tr` (safety net; proxy also does it)
+- `app/admin/{page,login,categories/[id],items/[id],qr}` — admin panel (fa/RTL, guarded)
+- `app/auth/signout/route.ts` — POST sign-out
+- `app/icon.png` + `app/apple-icon.png` — favicon/app icons (copies of the logo)
+- `lib/dictionaries.ts` — UI-chrome strings (inline, not JSON files)
+- `utils/supabase/{server,client,middleware}.ts` — Supabase SSR; `proxy.ts` (root) = session + locale redirect
+- `lib/i18n.ts` — LOCALES, DEFAULT_LOCALE, dir(), pick(field,locale) fallback
+- `lib/{data,admin-data,actions,fmt,auth,types}.ts` — public queries, admin queries, server actions,
+  digit/₺ formatter, requireUser guard, shared types
+- `components/` — Logo, LocaleSwitcher, CategoryNav, MenuItem, Reveal; `components/admin/*` (ui, lists,
+  editor, SortableList, AdminHeader, QrPanel)
+- `supabase/full_setup.sql` — **run this in the Supabase SQL editor** (schema + RLS + storage + seed);
+  split copies live in `supabase/migrations/0001_init.sql` + `0002_seed.sql`
+- `public/logo.png` — the نوش‌جان logo (owner-provided)
+
+**Key note:** Next 16 uses `proxy.ts` (not `middleware.ts`); function export is `proxy`. The file
+`utils/supabase/middleware.ts` keeps its name but exports `updateSession` (a helper, not the entry).
 
 ## Roadmap / next steps
-1. **← ACTIVE: get plan approved** (re-run ExitPlanMode) before writing code.
-2. Scaffold Next.js (TS + Tailwind), fonts, tokens; `lib/i18n.ts` + `messages/*.json`;
-   `[locale]/layout.tsx` sets lang/dir/font.
-3. Supabase util files + middleware (session refresh + `/` → `/tr` redirect).
-4. SQL migration: **jsonb** tables, RLS, **3-language seed** of the 7 categories/items/prices.
-5. Public menu + components + `LocaleSwitcher` + `lib/fmt.ts`.
-6. Admin auth (login + guarded layout + signout).
-7. Admin CRUD + drag-reorder with **per-language fields** (server actions).
-8. `/admin/qr` printable dynamic QR.
-9. `/impeccable` polish pass on the public menu (all three locales).
-10. Add `public/logo.png`; run + verify; hand off for deploy; then wire QR to final URL.
+Steps 1–9 (scaffold → i18n → migration → public menu → admin auth → admin CRUD → QR → polish) are
+**done**. Remaining:
+1. **← ACTIVE: deploy to Vercel** — set `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   env vars in the Vercel project; `git init` + push (repo has only `first commit` locally).
+2. Create the owner's login in the Supabase **Auth** tab (email/password) so they can reach `/admin`.
+3. After deploy, open `/admin/qr`, print/download the QR (it auto-encodes the deployed origin).
+4. Optional: connect a custom domain; the QR page regenerates against it automatically.
+5. Optional cleanup: remove `playwright` devDependency; refine TR/EN seed copy in admin.
 
 ## Deliberately partial — grows later (scope ledger)
 | Area | What shipped now | Intended full shape | Grows in |
 |------|------------------|---------------------|----------|
 | Auth | Manual Supabase-dashboard accounts, email/password | Self-serve multi-staff, roles | Later phase |
-| Items | name/subtitle/ingredients + prices | Per-item image, availability schedule | Later phase |
+| Items | name/subtitle/ingredients + **image** + prices | Availability schedule | Later phase |
 | QR | Single dynamic QR to `/` | Per-table / custom-domain QR | After deploy |
 | TR/EN copy | First-pass seed translations | Owner-refined in admin | Ongoing |
-| i18n | Tiny custom `lib/i18n.ts` + JSON dicts | `next-intl` if surface grows | If needed |
+| i18n | Tiny custom `lib/i18n.ts` + `lib/dictionaries.ts` | `next-intl` if surface grows | If needed |
 
 ## Gotchas / open issues
-- **Plan not approved yet** — confirm before building.
-- Owner must (a) create the owner's login in the Supabase **Auth** tab, (b) drop the logo at
-  `public/logo.png`, (c) deploy then provide the live URL for the QR.
-- Vercel CLI not installed (`npm i -g vercel` to unlock `vercel deploy`/`env pull`).
+- Owner must (a) create the owner's login in the Supabase **Auth** tab, (b) deploy then read the QR
+  from `/admin/qr`. Logo + SQL are already done.
+- **Next 16: `proxy.ts` not `middleware.ts`** — build log confirms "Proxy (Middleware)". Don't
+  re-add a `middleware.ts`; the Supabase helper `utils/supabase/middleware.ts` is just a helper file.
+- Item images go to the public Supabase Storage bucket `item-images` (created by `full_setup.sql`).
+  `next.config.ts` allow-lists the Supabase host for `next/image`.
 - Keys in `.env.local` are the **publishable** key (public read is by design via RLS) — never put a
-  service-role/secret key in client-exposed env or in docs.
-- README currently has a typo/encoding artifact ("nooshejoon") — harmless.
+  service-role/secret key in client-exposed env or in docs. Also set both vars in Vercel at deploy.
+- Vercel CLI not installed (`npm i -g vercel` to unlock `vercel deploy`/`env pull`).
+- `playwright` is a devDependency added only for screenshot verification — safe to remove.
 
 ## Running it
-Not runnable yet. After scaffold:
-- `npm install` → `npm run dev` (local), `npm run build` (pre-deploy check)
-- Deploy via Vercel (set the two `NEXT_PUBLIC_SUPABASE_*` env vars in the Vercel project).
+- `npm install` → `npm run dev` (local) → `npm run build` (pre-deploy check; currently green).
+- **DB**: run `supabase/full_setup.sql` in the Supabase SQL editor (already applied by owner).
+- Deploy via Vercel; set `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` env vars.
