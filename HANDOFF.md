@@ -52,6 +52,8 @@ Telegram/phone `05012991414`.
   ink `#1A1A1A`, paper `#F3F1EA`→`#E9E6DD`, card `#FCFCFA`, frame `#DAD7CC`, muted `#8A8778`.
 
 ## Current status
+- **DEPLOYED & LIVE** at https://nooshejoon.vercel.app (QR target: `/` → `/tr`). All locales +
+  admin login return 200; live menu data confirmed. GitHub: KaguSoftware/nooshejoon (branch `main`).
 - **Built and building clean** (`npm run build` passes; verified via Playwright screenshots at 390px).
 - Public menu renders faithfully to the exports (framed paper card, logo straddling top, centered
   title pills, category chip nav, ₺ prices, Persian digits, TR/FA/EN switch). Owner has applied the
@@ -113,8 +115,12 @@ Steps 1–9 (scaffold → i18n → migration → public menu → admin auth → 
 | i18n | Tiny custom `lib/i18n.ts` + `lib/dictionaries.ts` | `next-intl` if surface grows | If needed |
 
 ## Gotchas / open issues
-- Owner must (a) create the owner's login in the Supabase **Auth** tab, (b) deploy then read the QR
-  from `/admin/qr`. Logo + SQL are already done.
+- **Vercel Framework Preset MUST be "Next.js"** (Settings → Build & Deployment). It was created as
+  "Other" on first deploy → green build but every route 404'd (`X-Vercel-Error: NOT_FOUND`, no
+  `x-matched-path`). Fixed by switching preset to Next.js + redeploy. Also keep **Root Directory**
+  empty/`./` and **Output Directory** empty. If routes ever 404 site-wide again, check these first.
+- Owner must create the owner's login in the Supabase **Auth** tab to reach `/admin`. Logo, SQL,
+  and deploy are done. QR: log into live `/admin/qr` → Download PNG / Print.
 - **Next 16: `proxy.ts` not `middleware.ts`** — build log confirms "Proxy (Middleware)". Don't
   re-add a `middleware.ts`; the Supabase helper `utils/supabase/middleware.ts` is just a helper file.
 - Item images go to the public Supabase Storage bucket `item-images` (created by `full_setup.sql`).
