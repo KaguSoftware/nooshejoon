@@ -12,9 +12,9 @@ begin
     return;
   end if;
 
-  -- ── 1) بورک و دلمه ────────────────────────────────────────────────────────
+  -- ── 1) بورک ───────────────────────────────────────────────────────────────
   insert into public.categories (title, sort_order)
-    values ('{"tr":"Börek ve Dolma","fa":"بورک و دلمه","en":"Börek & Dolma"}', 1)
+    values ('{"tr":"Börek","fa":"بورک","en":"Börek"}', 1)
     returning id into cat;
 
   insert into public.items (category_id, name, subtitle, ingredients, sort_order)
@@ -52,23 +52,10 @@ begin
 
   insert into public.items (category_id, name, subtitle, ingredients, sort_order)
     values (cat,
-      '{"tr":"Dolma","fa":"دلمه","en":"Dolma"}',
-      null, null, 4)
-    returning id into it;
-  insert into public.item_prices (item_id, label, price, sort_order) values
-    (it, '{"tr":"500g kap","fa":"ظرف ۵۰۰ گرمی","en":"500g container"}', 600, 1);
-
-  -- ── 2) بورک و سمبوسه ──────────────────────────────────────────────────────
-  insert into public.categories (title, sort_order)
-    values ('{"tr":"Börek ve Samosa","fa":"بورک و سمبوسه","en":"Börek & Samosa"}', 2)
-    returning id into cat;
-
-  insert into public.items (category_id, name, subtitle, ingredients, sort_order)
-    values (cat,
       '{"tr":"Etli Börek","fa":"بورک گوشت","en":"Meat Börek"}',
       'Premium Roll',
       '{"tr":"Kıyma / kaşar / capia biber / özel baharat","fa":"گوشت چرخ کرده/پنیر کاشار/فلفل کاپی/ادویه مخصوص","en":"Ground meat / kashar / capia pepper / special spices"}',
-      1)
+      4)
     returning id into it;
   insert into public.item_prices (item_id, label, price, sort_order) values
     (it, '{"tr":"500g kap","fa":"ظرف ۵۰۰ گرمی","en":"500g container"}', 600, 1),
@@ -79,18 +66,31 @@ begin
       '{"tr":"Etli ve Patlıcanlı Börek","fa":"بورک گوشت و بادمجان","en":"Meat & Eggplant Börek"}',
       'Mix Roll',
       '{"tr":"Kıyma / kaşar / közlenmiş patlıcan","fa":"گوشت چرخ کرده/پنیرکاشار/بادمجان کبابی","en":"Ground meat / kashar / grilled eggplant"}',
-      2)
+      5)
     returning id into it;
   insert into public.item_prices (item_id, label, price, sort_order) values
     (it, '{"tr":"500g kap","fa":"ظرف ۵۰۰ گرمی","en":"500g container"}', 680, 1),
     (it, '{"tr":"20''li paket","fa":"بسته ۲۰ تایی","en":"Pack of 20"}', 600, 2);
+
+  -- ── 2) دلمه و سمبوسه ──────────────────────────────────────────────────────
+  insert into public.categories (title, sort_order)
+    values ('{"tr":"Dolma ve Samosa","fa":"دلمه و سمبوسه","en":"Dolma & Samosa"}', 2)
+    returning id into cat;
+
+  insert into public.items (category_id, name, subtitle, ingredients, sort_order)
+    values (cat,
+      '{"tr":"Dolma","fa":"دلمه","en":"Dolma"}',
+      null, null, 1)
+    returning id into it;
+  insert into public.item_prices (item_id, label, price, sort_order) values
+    (it, '{"tr":"500g kap","fa":"ظرف ۵۰۰ گرمی","en":"500g container"}', 600, 1);
 
   insert into public.items (category_id, name, subtitle, ingredients, sort_order)
     values (cat,
       '{"tr":"Samosa","fa":"سمبوسه","en":"Samosa"}',
       'Golden Triangle',
       '{"tr":"Lavaş / patates / tavuk / aromatik sebzeler","fa":"نان لواش/سیب‌زمینی/مرغ/سبزیجات معطر","en":"Lavash / potato / chicken / aromatic vegetables"}',
-      3)
+      2)
     returning id into it;
   insert into public.item_prices (item_id, label, price, sort_order) values
     (it, '{"tr":"500g kap","fa":"ظرف ۵۰۰ گرمی","en":"500g container"}', 400, 1),
